@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DDE2E3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Drift">
+<title>Drift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Layout: single narrow column, field-notebook feel, fixed tab bar at the bottom */
+:root{
+  --fog:#DDE2E3; --fog-deep:#C5CDD0; --ink:#1E2930; --ink-soft:#56646C;
+  --sea:#3E6B63; --lamp:#D99A2B; --erased:#8A7F9E; --quiet:#97A3A9; --paper:#EEF1F1;
+  --on-lamp:#1E2930;
+  --serif:"Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --sans:"Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fog:#1B2227; --fog-deep:#2E3940; --ink:#E4E9EA; --ink-soft:#9BA8AE;
+    --sea:#6FA59A; --lamp:#E8B04C; --erased:#A99EC0; --quiet:#6E7B82; --paper:#242D33;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --fog:#1B2227; --fog-deep:#2E3940; --ink:#E4E9EA; --ink-soft:#9BA8AE;
+  --sea:#6FA59A; --lamp:#E8B04C; --erased:#A99EC0; --quiet:#6E7B82; --paper:#242D33;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--fog);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-inline:16px}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+main{max-width:560px;margin:0 auto;padding-block:20px 120px}
+header.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px}
+header.top h1{font-family:var(--serif);font-weight:400;font-style:italic;font-size:1.6rem;margin:0}
+.status{font-size:.85rem;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--quiet)}
+.dot.on{background:var(--lamp);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--lamp) 60%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
+@media (prefers-reduced-motion: reduce){.dot.on{animation:none}.card.flip{animation:none!important}}
+
+/* Prompt card: the one bold thing, a torn-paper edge */
+.card{background:var(--paper);padding:34px 26px 30px;margin:6px 0 22px;
+  clip-path:polygon(0 3%,6% 0,17% 2%,31% 0,46% 1.5%,62% 0,78% 2%,91% .5%,100% 2.5%,99% 97%,88% 100%,72% 98.5%,55% 100%,38% 98%,21% 100%,8% 98%,0 99%)}
+.card .suit{font-size:.85rem;color:var(--ink-soft);margin:0 0 14px}
+.card .suit b{font-weight:600;color:var(--sea)}
+.card p.prompt{font-family:var(--serif);font-size:1.55rem;line-height:1.35;margin:0;text-wrap:balance}
+.card.flip{animation:flip .45s ease}
+@keyframes flip{0%{opacity:0;transform:translateY(8px) rotate(-.6deg)}100%{opacity:1;transform:none}}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--ink);background:transparent;padding:12px 18px;border-radius:999px;cursor:pointer;font-weight:500}
+.btn.solid{background:var(--ink);color:var(--fog)}
+.btn.lamp{background:var(--lamp);border-color:var(--lamp);color:var(--on-lamp)}
+.btn.danger{border-color:var(--erased);color:var(--erased)}
+.hint{font-size:.9rem;color:var(--ink-soft);margin:14px 0 0;max-width:60ch}
+.suits{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.suits button{border:1px solid var(--fog-deep);background:transparent;border-radius:6px;padding:6px 10px;font-size:.85rem;cursor:pointer;color:var(--ink-soft)}
+.suits button[aria-pressed="true"]{border-color:var(--sea);color:var(--sea);font-weight:600}
+
+/* Mark form */
+h2{font-family:var(--serif);font-weight:400;font-size:1.35rem;margin:4px 0 16px;text-wrap:balance}
+fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
+legend{font-weight:600;margin-bottom:8px;font-size:.95rem}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--fog-deep);background:var(--paper);border-radius:10px;padding:9px 13px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.sw{width:10px;height:10px;border-radius:50%;flex:none}
+.chip[aria-pressed="true"]{border-color:var(--ink)}
+.scale{display:flex;gap:6px}
+.scale button{flex:1;border:1.5px solid var(--fog-deep);background:var(--paper);padding:10px 0;border-radius:8px;cursor:pointer}
+.scale button[aria-pressed="true"]{background:var(--ink);color:var(--fog);border-color:var(--ink)}
+.scale-ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);margin-top:4px}
+input[type=text],textarea{width:100%;background:var(--paper);border:1.5px solid var(--fog-deep);border-radius:8px;padding:11px 12px}
+textarea{min-height:92px;resize:vertical;font-family:var(--serif);line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--fog);padding:10px 16px;border-radius:999px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* Trace */
+.trace-wrap{background:var(--paper);border-radius:4px;overflow:hidden}
+svg#trace{display:block;width:100%;height:auto}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--ink-soft);margin:12px 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.detail{background:var(--paper);padding:16px;border-left:3px solid var(--sea);margin-top:14px}
+.nm{font-family:var(--serif);font-style:italic;font-size:1.1rem;margin:0 0 4px}
+.detail p{margin:4px 0}
+.empty{font-family:var(--serif);font-style:italic;color:var(--ink-soft);padding:40px 10px;text-align:center}
+
+/* Log */
+.drift{border-top:1px solid var(--fog-deep);padding:16px 0}
+.drift h3{margin:0 0 6px;font-size:1rem;font-weight:600}
+.meta{font-size:.85rem;color:var(--ink-soft);margin:0 0 10px}
+.mk{display:flex;gap:10px;padding:8px 0}
+.mk .sw{margin-top:8px}
+.mk > div{min-width:0}
+.mk p{margin:0}
+.mk small{color:var(--ink-soft)}
+.mk-actions{display:flex;gap:16px;margin-top:2px}
+.linkbtn{background:none;border:0;padding:6px 0;color:var(--sea);font-weight:600;cursor:pointer;font-size:.9rem}
+.linkbtn.quiet{color:var(--ink-soft)}
+.editor{background:var(--paper);padding:14px;border-radius:8px;margin:10px 0}
+.elabel{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
+.editor > .elabel:first-child{margin-top:0}
+.editor input,.editor textarea{margin-top:6px;font-weight:400;background:var(--fog)}
+.editor .chip,.editor .scale button{background:var(--fog)}
+.editor .scale button[aria-pressed="true"]{background:var(--ink)}
+.confirm{background:var(--paper);border-left:3px solid var(--erased);padding:12px 14px;margin:8px 0;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.confirm p{margin:0;flex:1 1 180px}
+
+#importText{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;line-height:1.4;min-height:120px}
+#importFile{font-size:.9rem;max-width:100%}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--fog);border-top:1px solid var(--fog-deep);
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
+nav.tabs .in{display:flex;max-width:560px;width:100%;gap:4px}
+nav.tabs button{flex:1;background:none;border:0;padding:10px 0;cursor:pointer;color:var(--ink-soft);font-weight:500;border-radius:8px}
+nav.tabs button[aria-selected="true"]{color:var(--ink);background:var(--paper)}
+</style>
+
+</head>
+<body>
+<main>
+  <header class="top">
+    <h1>Drift</h1>
+    <div class="status" aria-live="polite"><span class="dot" id="dot"></span><span id="statusText">Not drifting</span></div>
+  </header>
+
+  <section class="view" id="v-drift" aria-label="Drift">
+    <div class="suits" role="group" aria-label="Kind of prompt">
+      <button type="button" data-suit="all" aria-pressed="true">Any</button>
+      <button type="button" data-suit="Orient" aria-pressed="false">Orient</button>
+      <button type="button" data-suit="Détourne" aria-pressed="false">Détourne</button>
+      <button type="button" data-suit="Belong" aria-pressed="false">Belong</button>
+      <button type="button" data-suit="Threshold" aria-pressed="false">Threshold</button>
+    </div>
+    <div class="card" id="card">
+      <p class="suit" id="cardSuit">Draw a card to begin</p>
+      <p class="prompt" id="cardText">Leave the efficient route. Let the city decide the next turn.</p>
+    </div>
+    <div class="row">
+      <button type="button" class="btn solid" id="drawBtn">Draw a prompt</button>
+      <button type="button" class="btn lamp" id="driftBtn">Start drift</button>
+    </div>
+    <p class="hint">Your drifts stay on this device. Nothing is uploaded. When you start a drift, your phone will ask to share your location. If you say no, the trace uses a simulated walk instead.</p>
+  </section>
+
+  <section class="view" id="v-mark" aria-label="Mark this place" hidden>
+    <h2>How does this place hold you?</h2>
+    <fieldset>
+      <legend>Your body here feels</legend>
+      <div class="chips" id="feelChips"></div>
+    </fieldset>
+    <fieldset>
+      <legend>How in-between is it?</legend>
+      <div class="scale" id="liminal"></div>
+      <div class="scale-ends"><span>Fully one thing</span><span>Neither, both</span></div>
+    </fieldset>
+    <fieldset>
+      <legend>The air</legend>
+      <div class="chips" id="fogChips"></div>
+    </fieldset>
+    <fieldset>
+      <legend><label for="rename">Your name for this place</label></legend>
+      <input type="text" id="rename" placeholder="Not what the map calls it" maxlength="80">
+    </fieldset>
+    <fieldset>
+      <legend><label for="note">What you noticed</label></legend>
+      <textarea id="note" placeholder="Who is this place for? Who isn't it for? What's leaking through?"></textarea>
+    </fieldset>
+    <button type="button" class="btn solid" id="saveMark">Save mark</button>
+    <p class="hint" id="markHint"></p>
+  </section>
+
+  <section class="view" id="v-trace" aria-label="Trace" hidden>
+    <h2>Your trace</h2>
+    <div class="trace-wrap"><svg id="trace" viewBox="0 0 400 400" role="img" aria-label="Path of your drift with marked places"></svg></div>
+    <p class="empty" id="traceEmpty" hidden>Start a drift and your path will surface here, like a street emerging from fog.</p>
+    <div class="legend" id="legend"></div>
+    <div class="detail" id="detail" aria-live="polite" hidden></div>
+  </section>
+
+  <section class="view" id="v-log" aria-label="Field log" hidden>
+    <h2>Field log</h2>
+    <div id="logList"></div>
+    <div class="row" style="margin-top:18px">
+      <button type="button" class="btn" id="copyBtn">Copy log as JSON</button>
+      <button type="button" class="btn" id="importBtn" aria-expanded="false" aria-controls="importBox">Import a log</button>
+      <button type="button" class="btn danger" id="clearBtn">Clear log</button>
+    </div>
+    <div id="clearConfirm"></div>
+    <div class="editor" id="importBox" hidden>
+      <label class="elabel" for="importText">Paste a log you copied from Drift</label>
+      <textarea id="importText" placeholder="[ { &quot;id&quot;: &quot;d17...&quot;, ... } ]" spellcheck="false"></textarea>
+      <label class="elabel" for="importFile">Or choose a saved log file</label>
+      <input type="file" id="importFile" accept=".json,.txt,application/json,text/plain">
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="btn solid" id="importGo">Import log</button>
+        <button type="button" class="btn" id="importCancel">Cancel</button>
+      </div>
+      <p class="hint">Drifts you already have are skipped, so importing the same log twice won't duplicate anything.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <div class="in">
+    <button type="button" role="tab" data-view="drift" aria-selected="true">Drift</button>
+    <button type="button" role="tab" data-view="mark" aria-selected="false">Mark</button>
+    <button type="button" role="tab" data-view="trace" aria-selected="false">Trace</button>
+    <button type="button" role="tab" data-view="log" aria-selected="false">Log</button>
+  </div>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+const DECK = [
+  ["Orient","Walk toward the brightest thing you can see. Stop when it's no longer the brightest."],
+  ["Orient","Take every second left until you reach water or a dead end."],
+  ["Orient","Follow one sound for as long as you can hear it."],
+  ["Orient","Walk the seam where two surfaces meet: sand and sidewalk, lawn and concrete."],
+  ["Orient","Go where the wind is coming from."],
+  ["Détourne","Find a sign. Rename this place using only words from it."],
+  ["Détourne","Pick a doorway that isn't meant for you. Describe who it's for."],
+  ["Détourne","Find a place built for waiting. Use it for something else for one minute."],
+  ["Détourne","Read the street like a sentence. What is it saying about the people who live here?"],
+  ["Belong","Stand somewhere you know you're allowed. Then somewhere you're not sure. Note what changed in you."],
+  ["Belong","Look for traces of who was here before the current owners."],
+  ["Belong","Find a place someone could rest. Would they be moved along?"],
+  ["Belong","Count the cameras on this block. Now count the benches."],
+  ["Threshold","Find a threshold: a gate, a curb, a fog line. Stand on it and describe each side."],
+  ["Threshold","Look for something unfinished. Imagine three futures for it."],
+  ["Threshold","Walk until the air changes. Mark exactly where it happened."],
+  ["Threshold","Find a place that belongs to no one right now. Stay until someone claims it."]
+];
+const FEELS = [
+  {k:"welcomed",label:"Welcomed",c:"--sea"},
+  {k:"watched",label:"Watched",c:"--lamp"},
+  {k:"unnoticed",label:"Unnoticed",c:"--quiet"},
+  {k:"pushed",label:"Pushed out",c:"--erased"}
+];
+const FOGS = ["Clear","Wisps","Blanket","Drizzle"];
+const KEY = "drift.v1";
+
+let state = load();
+let suit = "all", watchId = null, simTimer = null, simPos = null, fixTimer = null;
+let sel = {feel:null, liminal:null, fog:null};
+let lastPrompt = null, editing = null, confirmDel = null;
+
+function load(){
+  try{ const r = localStorage.getItem(KEY); if(r){ const s = JSON.parse(r); if(s && Array.isArray(s.drifts)) return s; } }catch(e){}
+  return {drifts:[], current:null};
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+const $ = s => document.querySelector(s);
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("show"),1800); }
+function cur(){ return state.drifts.find(d=>d.id===state.current) || null; }
+function fmtTime(t){ return new Date(t).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"}); }
+function fmtDate(t){ return new Date(t).toLocaleDateString([], {month:"short", day:"numeric"}); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function feelColor(k){ const f=FEELS.find(x=>x.k===k); return f ? "var("+f.c+")" : "var(--ink-soft)"; }
+function feelColorRaw(k){ const f=FEELS.find(x=>x.k===k); return cssVar(f ? f.c : "--ink-soft"); }
+function markMeta(m){ const f=FEELS.find(x=>x.k===m.feel);
+  return fmtTime(m.t)+(f?", "+f.label.toLowerCase():"")+(m.liminal?", in-between "+m.liminal+"/5":"")+(m.fog?", "+m.fog.toLowerCase():"")+(m.edited?", edited":"")+(m.added?", added later":""); }
+
+/* Tabs */
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
+function show(v){
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.view===v));
+  document.querySelectorAll("section.view").forEach(s=>{ s.hidden = s.id!=="v-"+v; });
+  if(v==="trace") renderTrace();
+  if(v==="log") renderLog();
+  if(v==="mark") $("#markHint").textContent = cur() ? "This mark will pin to your current spot on the drift." : "No drift running. The mark saves to your log without a position.";
+  window.scrollTo(0,0);
+}
+
+/* Prompts */
+document.querySelectorAll(".suits button").forEach(b=>b.addEventListener("click",()=>{
+  suit=b.dataset.suit;
+  document.querySelectorAll(".suits button").forEach(x=>x.setAttribute("aria-pressed", x===b));
+}));
+$("#drawBtn").addEventListener("click", ()=>{
+  const pool = DECK.filter(d=>(suit==="all"||d[0]===suit) && d!==lastPrompt);
+  const p = pool[Math.floor(Math.random()*pool.length)];
+  lastPrompt = p;
+  $("#cardSuit").innerHTML = "<b>"+esc(p[0])+"</b>";
+  $("#cardText").textContent = p[1];
+  const c=$("#card"); c.classList.remove("flip"); void c.offsetWidth; c.classList.add("flip");
+  const d = cur(); if(d){ d.prompts.push({t:Date.now(), suit:p[0], text:p[1]}); save(); }
+});
+
+/* Drift */
+$("#driftBtn").addEventListener("click", ()=> cur() ? stopDrift() : startDrift());
+function startDrift(){
+  const d = {id:"d"+Date.now(), start:Date.now(), end:null, points:[], marks:[], prompts:[], simulated:false};
+  if(lastPrompt) d.prompts.push({t:Date.now(), suit:lastPrompt[0], text:lastPrompt[1]});
+  state.drifts.unshift(d); state.current=d.id; save();
+  updateStatus();
+  watchLocation();
+}
+function watchLocation(){
+  let gotFix=false;
+  try{
+    if(!("geolocation" in navigator)) throw 0;
+    watchId = navigator.geolocation.watchPosition(pos=>{
+      gotFix=true; clearTimeout(fixTimer); addPoint(pos.coords.latitude, pos.coords.longitude);
+    }, ()=>{ if(!gotFix) startSim(); }, {enableHighAccuracy:true, maximumAge:5000, timeout:10000});
+    fixTimer = setTimeout(()=>{ if(!gotFix && cur() && !simTimer) startSim(); }, 10000);
+  }catch(e){ startSim(); }
+}
+function startSim(){
+  const d=cur(); if(!d || simTimer) return;
+  clearTimeout(fixTimer);
+  if(watchId!==null){ try{ navigator.geolocation.clearWatch(watchId); }catch(e){} watchId=null; }
+  d.simulated=true; save(); updateStatus();
+  simPos = d.points.length ? d.points[d.points.length-1].slice(0,2) : [37.7535,-122.5045];
+  let heading = Math.random()*Math.PI*2;
+  addPoint(simPos[0], simPos[1]);
+  simTimer = setInterval(()=>{
+    heading += (Math.random()-.5)*1.1;
+    simPos = [simPos[0]+Math.cos(heading)*0.00012, simPos[1]+Math.sin(heading)*0.00015];
+    addPoint(simPos[0], simPos[1]);
+  }, 3000);
+}
+function addPoint(lat,lng){
+  const d=cur(); if(!d) return;
+  const last=d.points[d.points.length-1];
+  if(last && Math.abs(last[0]-lat)<0.00002 && Math.abs(last[1]-lng)<0.00002) return;
+  d.points.push([lat,lng,Date.now()]); save();
+  if(!$("#v-trace").hidden) renderTrace();
+}
+function stopDrift(){
+  const d=cur(); if(d) d.end=Date.now();
+  clearTimeout(fixTimer);
+  if(watchId!==null){ try{ navigator.geolocation.clearWatch(watchId); }catch(e){} watchId=null; }
+  clearInterval(simTimer); simTimer=null;
+  state.current=null; save(); updateStatus(); toast("Drift ended");
+}
+function updateStatus(){
+  const d=cur();
+  $("#dot").classList.toggle("on", !!d);
+  $("#statusText").textContent = d ? (d.simulated ? "Drifting (simulated)" : "Drifting") : "Not drifting";
+  $("#driftBtn").textContent = d ? "End drift" : "Start drift";
+}
+
+/* Mark form */
+function pickGroup(container, items, key, render){
+  items.forEach(it=>{
+    const b=render(it); b.type="button"; b.setAttribute("aria-pressed","false");
+    b.addEventListener("click",()=>{
+      const was = b.getAttribute("aria-pressed")==="true";
+      container.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"));
+      if(!was){ b.setAttribute("aria-pressed","true"); sel[key]=b.dataset.val; } else sel[key]=null;
+    });
+    container.appendChild(b);
+  });
+}
+pickGroup($("#feelChips"), FEELS, "feel", f=>{ const b=document.createElement("button"); b.className="chip"; b.dataset.val=f.k;
+  b.innerHTML='<span class="sw" style="background:var('+f.c+')"></span>'+f.label; return b; });
+pickGroup($("#liminal"), [1,2,3,4,5], "liminal", i=>{ const b=document.createElement("button"); b.dataset.val=i; b.textContent=i;
+  b.setAttribute("aria-label","In-between level "+i+" of 5"); return b; });
+pickGroup($("#fogChips"), FOGS, "fog", f=>{ const b=document.createElement("button"); b.className="chip"; b.dataset.val=f; b.textContent=f; return b; });
+
+$("#saveMark").addEventListener("click",()=>{
+  const name=$("#rename").value.trim(), note=$("#note").value.trim();
+  if(!sel.feel && !note && !name){ toast("Choose a feeling or write something first"); return; }
+  let d=cur();
+  if(!d){
+    d = state.drifts.find(x=>x.loose && new Date(x.start).toDateString()===new Date().toDateString());
+    if(!d){ d={id:"d"+Date.now(), start:Date.now(), end:Date.now(), points:[], marks:[], prompts:[], simulated:false, loose:true}; state.drifts.unshift(d); }
+  }
+  const p=d.points[d.points.length-1];
+  d.marks.push({t:Date.now(), feel:sel.feel, liminal:sel.liminal?+sel.liminal:null, fog:sel.fog, name, note,
+    pos: p ? [p[0],p[1]] : null, prompt: lastPrompt ? lastPrompt[1] : null});
+  save();
+  sel={feel:null,liminal:null,fog:null};
+  document.querySelectorAll("#v-mark [aria-pressed]").forEach(x=>x.setAttribute("aria-pressed","false"));
+  $("#rename").value=""; $("#note").value="";
+  toast("Mark saved");
+});
+
+/* Trace */
+function renderTrace(){
+  const svg=$("#trace"), det=$("#detail");
+  $("#legend").innerHTML = FEELS.map(f=>'<span><span class="sw" style="background:var('+f.c+')"></span>'+f.label+'</span>').join("");
+  det.hidden = true;
+  const d = cur() || state.drifts.find(x=>x.points.length);
+  if(!d || !d.points.length){ svg.parentNode.hidden = true; $("#traceEmpty").hidden = false; return; }
+  svg.parentNode.hidden = false; $("#traceEmpty").hidden = true;
+  const k=Math.cos(d.points[0][0]*Math.PI/180);
+  const xy = p => [p[1]*k, -p[0]];
+  const pts=d.points.map(xy), mpts=d.marks.map((m,i)=>({m,i})).filter(o=>o.m.pos).map(o=>({m:o.m, i:o.i, p:xy(o.m.pos)}));
+  const all=pts.concat(mpts.map(o=>o.p));
+  const xs=all.map(p=>p[0]), ys=all.map(p=>p[1]);
+  const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+  const span=Math.max(maxX-minX, maxY-minY, 0.0015), pad=40, S=400;
+  const cx=(minX+maxX)/2, cy=(minY+maxY)/2;
+  const proj=p=>[S/2+(p[0]-cx)/span*(S-2*pad), S/2+(p[1]-cy)/span*(S-2*pad)];
+  const ink=cssVar("--ink"), grid=cssVar("--fog-deep"), soft=cssVar("--ink-soft");
+  let g=""; for(let i=1;i<8;i++) g+='<line x1="'+i*50+'" y1="0" x2="'+i*50+'" y2="400" stroke="'+grid+'" stroke-width="0.5"/><line x1="0" y1="'+i*50+'" x2="400" y2="'+i*50+'" stroke="'+grid+'" stroke-width="0.5"/>';
+  const path = pts.map(proj).map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const s=proj(pts[0]), e=proj(pts[pts.length-1]);
+  let marks=""; mpts.forEach((o,n)=>{ const p=proj(o.p), c=feelColorRaw(o.m.feel);
+    marks+='<g class="m" data-i="'+o.i+'" tabindex="0" role="button" aria-label="Mark '+(n+1)+'" style="cursor:pointer">'+
+      '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="22" fill="'+c+'" opacity="0.35" filter="url(#haze)"/>'+
+      '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="6" fill="'+c+'" stroke="'+ink+'" stroke-width="1"/></g>'; });
+  svg.innerHTML='<defs><filter id="haze" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7"/></filter></defs>'+g+
+    '<path d="'+path+'" fill="none" stroke="'+ink+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle cx="'+s[0]+'" cy="'+s[1]+'" r="4" fill="none" stroke="'+ink+'" stroke-width="1.5"/>'+
+    '<circle cx="'+e[0]+'" cy="'+e[1]+'" r="4" fill="'+ink+'"/>'+marks+
+    '<text x="12" y="388" font-family="Work Sans, sans-serif" font-size="11" fill="'+soft+'">'+fmtDate(d.start)+", "+fmtTime(d.start)+(d.simulated?" (simulated)":"")+'</text>';
+  svg.querySelectorAll("g.m").forEach(el=>{
+    const open=()=>{ const m=d.marks[+el.dataset.i];
+      det.style.borderLeftColor=feelColor(m.feel);
+      det.innerHTML=(m.name?'<p class="nm">'+esc(m.name)+'</p>':'')+'<p><small>'+markMeta(m)+'</small></p>'+
+        (m.note?'<p>'+esc(m.note)+'</p>':'')+(m.prompt?'<p><small>Prompt: '+esc(m.prompt)+'</small></p>':'');
+      det.hidden=false; };
+    el.addEventListener("click",open);
+    el.addEventListener("keydown",ev=>{ if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();open();} });
+  });
+}
+
+/* Log, with edit, delete, and add-later */
+function editorHTML(m){
+  m=m||{};
+  const feel=FEELS.map(f=>'<button type="button" class="chip" data-pick data-val="'+f.k+'" aria-pressed="'+(m.feel===f.k)+'"><span class="sw" style="background:var('+f.c+')"></span>'+f.label+'</button>').join("");
+  let lim=""; for(let i=1;i<=5;i++) lim+='<button type="button" data-pick data-val="'+i+'" aria-pressed="'+(m.liminal===i)+'" aria-label="In-between level '+i+' of 5">'+i+'</button>';
+  const fog=FOGS.map(f=>'<button type="button" class="chip" data-pick data-val="'+f+'" aria-pressed="'+(m.fog===f)+'">'+f+'</button>').join("");
+  return '<div class="editor">'+
+    '<span class="elabel">Your body here felt</span><div class="chips" data-group="feel">'+feel+'</div>'+
+    '<span class="elabel">How in-between</span><div class="scale" data-group="liminal">'+lim+'</div>'+
+    '<span class="elabel">The air</span><div class="chips" data-group="fog">'+fog+'</div>'+
+    '<label class="elabel">Your name for this place<input type="text" id="e-name" maxlength="80" value="'+esc(m.name)+'"></label>'+
+    '<label class="elabel">What you noticed<textarea id="e-note">'+esc(m.note)+'</textarea></label>'+
+    '<div class="row" style="margin-top:12px"><button type="button" class="btn solid" data-act="save">Save changes</button><button type="button" class="btn" data-act="cancel">Cancel</button></div></div>';
+}
+function renderLog(){
+  const L=$("#logList");
+  if(!state.drifts.length){ L.innerHTML='<p class="empty">Your log is empty. Draw a prompt, start a drift, and mark what you notice.</p>'; return; }
+  L.innerHTML=state.drifts.map((d,di)=>{
+    const mins = Math.max(1, Math.round(((d.end||Date.now())-d.start)/60000));
+    const title = d.loose ? "Loose marks" : (d.id===state.current ? "Drift in progress" : "Drift");
+    const marks=d.marks.map((m,mi)=>{
+      if(editing && editing.di===di && editing.mi===mi) return editorHTML(m);
+      const asking = confirmDel && confirmDel.di===di && confirmDel.mi===mi;
+      return '<div class="mk"><span class="sw" style="background:'+feelColor(m.feel)+'"></span><div>'+
+        (m.name?'<p class="nm">'+esc(m.name)+'</p>':'')+(m.note?'<p>'+esc(m.note)+'</p>':'')+
+        '<small>'+markMeta(m)+'</small>'+
+        (asking
+          ? '<div class="confirm"><p>Delete this mark?</p><button type="button" class="btn danger" data-act="delyes" data-di="'+di+'" data-mi="'+mi+'">Delete</button><button type="button" class="btn" data-act="delno">Keep</button></div>'
+          : '<div class="mk-actions"><button type="button" class="linkbtn" data-act="edit" data-di="'+di+'" data-mi="'+mi+'">Edit</button>'+
+            '<button type="button" class="linkbtn quiet" data-act="del" data-di="'+di+'" data-mi="'+mi+'">Delete</button></div>')+
+        '</div></div>';
+    }).join("");
+    const adding = editing && editing.di===di && editing.mi===-1;
+    return '<div class="drift"><h3>'+title+'</h3><p class="meta">'+fmtDate(d.start)+", "+fmtTime(d.start)+
+      (d.loose?"":", "+mins+" min, "+d.points.length+" points")+", "+d.marks.length+" marks"+(d.simulated?", simulated path":"")+(d.imported?", imported":"")+'</p>'+
+      marks+(adding?editorHTML(null):'<button type="button" class="linkbtn" data-act="add" data-di="'+di+'">Add a forgotten mark</button>')+'</div>';
+  }).join("");
+}
+$("#logList").addEventListener("click",ev=>{
+  const pick=ev.target.closest("[data-pick]");
+  if(pick){ const g=pick.closest("[data-group]"); const was=pick.getAttribute("aria-pressed")==="true";
+    g.querySelectorAll("[data-pick]").forEach(x=>x.setAttribute("aria-pressed","false"));
+    if(!was) pick.setAttribute("aria-pressed","true"); return; }
+  const b=ev.target.closest("[data-act]"); if(!b) return;
+  const act=b.dataset.act, di=+b.dataset.di, mi=+b.dataset.mi;
+  if(act==="edit"){ editing={di,mi}; confirmDel=null; renderLog(); focusEditor(); }
+  else if(act==="add"){ editing={di,mi:-1}; confirmDel=null; renderLog(); focusEditor(); }
+  else if(act==="cancel"){ editing=null; renderLog(); }
+  else if(act==="del"){ confirmDel={di,mi}; editing=null; renderLog(); }
+  else if(act==="delno"){ confirmDel=null; renderLog(); }
+  else if(act==="delyes"){ state.drifts[di].marks.splice(mi,1); save(); confirmDel=null; renderLog(); toast("Mark deleted"); }
+  else if(act==="save"){
+    const ed=b.closest(".editor"), d=state.drifts[editing.di];
+    const val=g=>{ const x=ed.querySelector('[data-group="'+g+'"] [aria-pressed="true"]'); return x?x.dataset.val:null; };
+    const vals={feel:val("feel"), liminal:val("liminal")?+val("liminal"):null, fog:val("fog"),
+      name:$("#e-name").value.trim(), note:$("#e-note").value.trim()};
+    if(editing.mi===-1){
+      if(!vals.feel && !vals.name && !vals.note){ toast("Choose a feeling or write something first"); return; }
+      d.marks.push(Object.assign({t:Date.now(), pos:null, prompt:null, added:true}, vals)); toast("Mark added");
+    } else { Object.assign(d.marks[editing.mi], vals, {edited:Date.now()}); toast("Mark updated"); }
+    save(); editing=null; renderLog();
+  }
+});
+function focusEditor(){ const e=$("#logList .editor"); if(e){ e.scrollIntoView({block:"center"}); const t=$("#e-note"); if(t) t.focus({preventScroll:true}); } }
+
+$("#copyBtn").addEventListener("click",()=>{
+  const txt=JSON.stringify(state.drifts,null,2);
+  const fallback=()=>{ const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select();
+    try{ document.execCommand("copy"); toast("Log copied"); }catch(_){ toast("Copy isn't available here"); } t.remove(); };
+  try{ navigator.clipboard.writeText(txt).then(()=>toast("Log copied"), fallback); }catch(e){ fallback(); }
+});
+$("#clearBtn").addEventListener("click",()=>{
+  openImport(false);
+  $("#clearConfirm").innerHTML='<div class="confirm"><p>Clear every drift and mark on this device?</p><button type="button" class="btn danger" id="clearYes">Clear log</button><button type="button" class="btn" id="clearNo">Keep</button></div>';
+  $("#clearYes").addEventListener("click",()=>{
+    if(cur()) stopDrift();
+    state={drifts:[], current:null}; save(); $("#clearConfirm").innerHTML=""; renderLog(); toast("Log cleared");
+  });
+  $("#clearNo").addEventListener("click",()=>{ $("#clearConfirm").innerHTML=""; });
+});
+
+/* Import */
+function openImport(show){ $("#importBox").hidden=!show; $("#importBtn").setAttribute("aria-expanded",show);
+  if(show){ $("#clearConfirm").innerHTML=""; $("#importText").focus(); } else { $("#importText").value=""; $("#importFile").value=""; } }
+$("#importBtn").addEventListener("click",()=>openImport($("#importBox").hidden));
+$("#importCancel").addEventListener("click",()=>openImport(false));
+$("#importFile").addEventListener("change",ev=>{
+  const f=ev.target.files && ev.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ $("#importText").value=String(r.result||""); }; r.onerror=()=>toast("That file couldn't be read"); r.readAsText(f);
+});
+function cleanDrift(d){
+  if(!d || typeof d!=="object" || typeof d.id!=="string" || typeof d.start!=="number") return null;
+  const num=x=>typeof x==="number" && isFinite(x);
+  const pts=Array.isArray(d.points)?d.points.filter(p=>Array.isArray(p)&&num(p[0])&&num(p[1])).map(p=>[p[0],p[1],num(p[2])?p[2]:d.start]):[];
+  const marks=Array.isArray(d.marks)?d.marks.filter(m=>m&&typeof m==="object").map(m=>({
+    t:num(m.t)?m.t:d.start, feel:FEELS.some(f=>f.k===m.feel)?m.feel:null,
+    liminal:num(m.liminal)&&m.liminal>=1&&m.liminal<=5?Math.round(m.liminal):null,
+    fog:FOGS.includes(m.fog)?m.fog:null, name:typeof m.name==="string"?m.name.slice(0,80):"",
+    note:typeof m.note==="string"?m.note:"", pos:Array.isArray(m.pos)&&num(m.pos[0])&&num(m.pos[1])?[m.pos[0],m.pos[1]]:null,
+    prompt:typeof m.prompt==="string"?m.prompt:null, edited:num(m.edited)?m.edited:undefined, added:m.added===true||undefined})):[];
+  const prompts=Array.isArray(d.prompts)?d.prompts.filter(x=>x&&typeof x.text==="string").map(x=>({t:num(x.t)?x.t:d.start,suit:String(x.suit||""),text:x.text})):[];
+  return {id:d.id, start:d.start, end:num(d.end)?d.end:d.start, points:pts, marks, prompts, simulated:!!d.simulated, loose:!!d.loose, imported:true};
+}
+$("#importGo").addEventListener("click",()=>{
+  const raw=$("#importText").value.trim();
+  if(!raw){ toast("Paste a log or choose a file first"); return; }
+  let data; try{ data=JSON.parse(raw); }catch(e){ toast("That doesn't look like a Drift log"); return; }
+  if(data && !Array.isArray(data) && Array.isArray(data.drifts)) data=data.drifts;
+  if(!Array.isArray(data)){ toast("That doesn't look like a Drift log"); return; }
+  const have=new Set(state.drifts.map(d=>d.id));
+  let added=0, skipped=0;
+  data.forEach(d=>{ const c=cleanDrift(d); if(!c) return; if(have.has(c.id)){ skipped++; return; } state.drifts.push(c); have.add(c.id); added++; });
+  if(!added && !skipped){ toast("No drifts found in that log"); return; }
+  state.drifts.sort((a,b)=>b.start-a.start);
+  editing=null; confirmDel=null; save(); openImport(false); renderLog();
+  toast(added ? "Imported "+added+(added===1?" drift":" drifts")+(skipped?", skipped "+skipped:"") : "Already in your log");
+});
+
+/* Resume an interrupted drift */
+if(cur()){ if(cur().simulated) startSim(); else watchLocation(); }
+updateStatus();
+})();
+</script>
+
+</body>
+</html>
