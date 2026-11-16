@@ -3,129 +3,166 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#DDE2E3">
+<meta name="theme-color" content="#ECEAE3">
+<meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Drift">
 <title>Drift</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Cabin:ital@1&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-/* Layout: single narrow column, field-notebook feel, fixed tab bar at the bottom */
+/* Dada field notebook: newsprint ground, red halftone, paste-up cutouts, ransom-note type */
 :root{
-  --fog:#DDE2E3; --fog-deep:#C5CDD0; --ink:#1E2930; --ink-soft:#56646C;
-  --sea:#3E6B63; --lamp:#D99A2B; --erased:#8A7F9E; --quiet:#97A3A9; --paper:#EEF1F1;
-  --on-lamp:#1E2930;
+  --fog:#ECEAE3; --fog-deep:#CBC7BB; --ink:#141414; --ink-soft:#4B4A45;
+  --sea:#2B8A8C; --lamp:#F15041; --erased:#76679A; --quiet:#9B988E; --paper:#FBFAF5;
+  --on-lamp:#141414; --mint:#A8E2CF; --tan:#E9D3A4;
   --serif:"Libre Caslon Text", Georgia, "Times New Roman", serif;
   --sans:"Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --fog:#1B2227; --fog-deep:#2E3940; --ink:#E4E9EA; --ink-soft:#9BA8AE;
-    --sea:#6FA59A; --lamp:#E8B04C; --erased:#A99EC0; --quiet:#6E7B82; --paper:#242D33;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --fog:#1B2227; --fog-deep:#2E3940; --ink:#E4E9EA; --ink-soft:#9BA8AE;
-  --sea:#6FA59A; --lamp:#E8B04C; --erased:#A99EC0; --quiet:#6E7B82; --paper:#242D33;
-  color-scheme:dark;
+  --type:"Special Elite", "Courier New", monospace;
+  --block:"Archivo Black", "Arial Black", Impact, sans-serif;
+  color-scheme:light;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{height:100%}
-body{margin:0;min-height:100%;background:var(--fog);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-inline:16px}
+body{margin:0;min-height:100%;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-inline:16px;
+  background-color:var(--fog);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(0deg, transparent 0 7px, rgba(20,20,20,.035) 7px 8px);}
 button,input,textarea{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
-main{max-width:560px;margin:0 auto;padding-block:20px 120px}
-header.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px}
-header.top h1{font-family:var(--serif);font-weight:400;font-style:italic;font-size:1.6rem;margin:0}
-.status{font-size:.85rem;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--quiet)}
-.dot.on{background:var(--lamp);animation:pulse 2.4s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--lamp) 60%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
-@media (prefers-reduced-motion: reduce){.dot.on{animation:none}.card.flip{animation:none!important}}
+:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+main{max-width:560px;margin:0 auto;padding-block:0 120px}
 
-/* Prompt card: the one bold thing, a torn-paper edge */
-.card{background:var(--paper);padding:34px 26px 30px;margin:6px 0 22px;
-  clip-path:polygon(0 3%,6% 0,17% 2%,31% 0,46% 1.5%,62% 0,78% 2%,91% .5%,100% 2.5%,99% 97%,88% 100%,72% 98.5%,55% 100%,38% 98%,21% 100%,8% 98%,0 99%)}
-.card .suit{font-size:.85rem;color:var(--ink-soft);margin:0 0 14px}
-.card .suit b{font-weight:600;color:var(--sea)}
-.card p.prompt{font-family:var(--serif);font-size:1.55rem;line-height:1.35;margin:0;text-wrap:balance}
-.card.flip{animation:flip .45s ease}
-@keyframes flip{0%{opacity:0;transform:translateY(8px) rotate(-.6deg)}100%{opacity:1;transform:none}}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.btn{border:1.5px solid var(--ink);background:transparent;padding:12px 18px;border-radius:999px;cursor:pointer;font-weight:500}
-.btn.solid{background:var(--ink);color:var(--fog)}
-.btn.lamp{background:var(--lamp);border-color:var(--lamp);color:var(--on-lamp)}
-.btn.danger{border-color:var(--erased);color:var(--erased)}
-.hint{font-size:.9rem;color:var(--ink-soft);margin:14px 0 0;max-width:60ch}
-.suits{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
-.suits button{border:1px solid var(--fog-deep);background:transparent;border-radius:6px;padding:6px 10px;font-size:.85rem;cursor:pointer;color:var(--ink-soft)}
-.suits button[aria-pressed="true"]{border-color:var(--sea);color:var(--sea);font-weight:600}
+/* Masthead: red halftone band, ransom-note title, dotted status box */
+header.top{position:relative;margin:0 -16px 20px;padding:18px 16px 16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;
+  background:radial-gradient(circle, rgba(241,80,65,.55) 1.1px, transparent 1.6px) 0 0/7px 7px}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:12px;background:var(--fog);
+  clip-path:polygon(0 50%,4% 10%,9% 60%,15% 20%,22% 55%,30% 15%,38% 60%,47% 25%,55% 55%,63% 10%,71% 50%,80% 20%,88% 60%,94% 15%,100% 45%,100% 100%,0 100%)}
+header.top h1{margin:0;font-size:2.4rem;line-height:1;display:flex;align-items:flex-end;gap:2px}
+.rn{display:inline-block;padding:2px 5px 0;line-height:1}
+.rn:nth-child(1){font-family:var(--block);background:var(--ink);color:var(--paper);transform:rotate(-4deg);font-size:1.1em}
+.rn:nth-child(2){font-family:var(--serif);font-style:italic;background:var(--paper);transform:rotate(3deg) translateY(-3px);font-size:.95em;box-shadow:1px 1px 0 rgba(0,0,0,.15)}
+.rn:nth-child(3){font-family:var(--type);background:var(--tan);transform:rotate(-2deg) translateY(2px);font-size:.85em}
+.rn:nth-child(4){font-family:var(--block);color:var(--lamp);transform:rotate(5deg);font-size:1.05em}
+.rn:nth-child(5){font-family:var(--serif);font-weight:700;background:var(--mint);transform:rotate(-6deg) translateY(-2px);font-size:.9em}
+.status{font-size:.8rem;font-family:var(--type);color:var(--ink);display:flex;align-items:center;gap:8px;padding:6px 10px;border:2px dotted var(--quiet);background:rgba(251,250,245,.85);transform:rotate(1.2deg)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--quiet)}
+.dot.on{background:var(--lamp);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(241,80,65,.6)}100%{box-shadow:0 0 0 12px transparent}}
+
+/* Suits: torn tape labels */
+.suits{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.suits button{border:0;background:var(--paper);padding:5px 11px 4px;font-family:var(--type);font-size:.85rem;cursor:pointer;color:var(--ink-soft);
+  clip-path:polygon(2% 0,98% 6%,100% 92%,3% 100%,0 40%);box-shadow:inset 0 0 0 1px var(--fog-deep)}
+.suits button:nth-child(odd){transform:rotate(-1.5deg)}
+.suits button:nth-child(even){transform:rotate(1.8deg)}
+.suits button[aria-pressed="true"]{background:var(--ink);color:var(--paper);box-shadow:none}
+
+/* The scene: a road cutout, a blank billboard, the prompt pasted onto it */
+.scene{position:relative;width:100%;aspect-ratio:1/.92;margin:4px 0 18px;container-type:inline-size;overflow:hidden}
+.scene[data-board="pole"]{aspect-ratio:1/1.05}
+.road{position:absolute;left:-4%;width:108%;bottom:0;height:auto;mix-blend-mode:multiply;opacity:.92;transform-origin:50% 100%;
+  transform:rotate(var(--rr,0deg)) translateX(var(--rx,0%));transition:opacity .9s ease}
+.road.out{opacity:0}
+.board{position:absolute;top:var(--by,2%);left:50%;width:var(--bw,92%);transform:translateX(-50%) rotate(var(--br,-1deg));transform-origin:50% 90%;
+  filter:drop-shadow(3px 4px 0 rgba(20,20,20,.12))}
+.scene[data-board="pole"] .board{--bw:66%}
+.board img{display:block;width:100%;height:auto}
+.panel{position:absolute;left:var(--pl);right:var(--pr);top:var(--pt);bottom:var(--pb);display:flex;flex-direction:column;justify-content:center;overflow:hidden;transform:rotate(var(--pr8,0deg))}
+.board[data-kind="legs"] .panel{--pl:11%;--pr:5%;--pt:12%;--pb:40%;--pr8:-2.2deg}
+.board[data-kind="pole"] .panel{--pl:8%;--pr:10%;--pt:21.5%;--pb:58%;--pr8:0deg}
+.panel .suit{font-family:var(--type);color:var(--lamp);font-size:.8rem;margin:0 0 .35em;letter-spacing:.04em;text-transform:lowercase}
+.panel .suit b{font-weight:400}
+.panel p.prompt{font-family:var(--serif);line-height:1.22;margin:0;text-wrap:balance;position:relative;z-index:1}
+.panel .ghost{position:absolute;inset:0;margin:0;display:flex;align-items:center;font-family:var(--serif);font-style:italic;line-height:1.2;
+  color:var(--ink);opacity:.11;transform:rotate(3deg) translate(6%,8%);filter:blur(.4px);pointer-events:none;text-wrap:balance}
+.board.paste .prompt,.board.paste .suit{animation:paste .7s cubic-bezier(.3,.7,.2,1) both}
+.board.paste .suit{animation-duration:.4s}
+@keyframes paste{0%{clip-path:inset(0 100% 0 0);opacity:.3}100%{clip-path:inset(0 0 0 0);opacity:1}}
+.board.paste{animation:settle .6s ease both}
+@keyframes settle{0%{opacity:.4;transform:translateX(-50%) rotate(calc(var(--br) + 2deg)) translateY(-6px)}100%{opacity:1}}
+.tape{position:absolute;width:20%;height:7%;background:rgba(233,211,164,.75);mix-blend-mode:multiply;top:var(--ty,4%);left:var(--tx,4%);transform:rotate(var(--tr,-18deg));pointer-events:none;
+  clip-path:polygon(0 8%,4% 0,96% 4%,100% 0,98% 92%,100% 100%,3% 96%,0 100%)}
+.sticker{position:absolute;width:13%;aspect-ratio:1;border-radius:50%;right:var(--sx,6%);top:var(--sy,58%);pointer-events:none;
+  background:radial-gradient(circle, var(--lamp) 1.2px, transparent 1.7px) 0 0/5px 5px;opacity:.8;mix-blend-mode:multiply}
+@media (prefers-reduced-motion: reduce){.dot.on,.board.paste,.board.paste .prompt,.board.paste .suit{animation:none!important}.road{transition:none}}
+
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{border:2.5px solid var(--ink);background:var(--paper);padding:11px 18px;border-radius:14px;cursor:pointer;font-weight:600;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.solid{background:var(--ink);color:var(--paper);box-shadow:3px 3px 0 var(--lamp)}
+.btn.lamp{background:linear-gradient(100deg,#F7F1B5 0%,var(--mint) 45%,#58B9C2 100%);color:var(--ink)}
+.btn.danger{border-color:var(--erased);color:var(--erased);box-shadow:3px 3px 0 var(--erased)}
+.hint{font-size:.92rem;color:var(--ink-soft);margin:16px 0 0;max-width:60ch;font-family:"Cabin",var(--sans);font-style:italic}
 
 /* Mark form */
-h2{font-family:var(--serif);font-weight:400;font-size:1.35rem;margin:4px 0 16px;text-wrap:balance}
+h2{font-family:var(--block);font-weight:400;font-size:1.35rem;line-height:1.15;margin:4px 0 18px;text-wrap:balance;letter-spacing:-.01em}
 fieldset{border:0;padding:0;margin:0 0 22px;min-width:0}
-legend{font-weight:600;margin-bottom:8px;font-size:.95rem}
+legend{font-family:var(--type);margin-bottom:8px;font-size:.95rem}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{border:1.5px solid var(--fog-deep);background:var(--paper);border-radius:10px;padding:9px 13px;cursor:pointer;display:flex;align-items:center;gap:8px}
-.sw{width:10px;height:10px;border-radius:50%;flex:none}
-.chip[aria-pressed="true"]{border-color:var(--ink)}
+.chip{border:2px solid var(--ink);background:var(--paper);border-radius:4px;padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.chip:nth-child(odd){transform:rotate(-.8deg)}
+.chip:nth-child(even){transform:rotate(.9deg)}
+.sw{width:11px;height:11px;border-radius:50%;flex:none;border:1px solid rgba(0,0,0,.35)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .scale{display:flex;gap:6px}
-.scale button{flex:1;border:1.5px solid var(--fog-deep);background:var(--paper);padding:10px 0;border-radius:8px;cursor:pointer}
-.scale button[aria-pressed="true"]{background:var(--ink);color:var(--fog);border-color:var(--ink)}
-.scale-ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);margin-top:4px}
-input[type=text],textarea{width:100%;background:var(--paper);border:1.5px solid var(--fog-deep);border-radius:8px;padding:11px 12px}
+.scale button{flex:1;border:2px solid var(--ink);background:var(--paper);padding:9px 0;border-radius:4px;cursor:pointer;font-family:var(--type)}
+.scale button[aria-pressed="true"]{background:var(--lamp);color:var(--ink)}
+.scale-ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);margin-top:4px;font-style:italic}
+input[type=text],textarea{width:100%;background:var(--paper);border:2px dotted var(--quiet);border-radius:2px;padding:11px 12px}
 textarea{min-height:92px;resize:vertical;font-family:var(--serif);line-height:1.6}
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--fog);padding:10px 16px;border-radius:999px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) rotate(-1deg);background:var(--ink);color:var(--paper);padding:9px 16px;font-family:var(--type);font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
 .toast.show{opacity:1}
 
 /* Trace */
-.trace-wrap{background:var(--paper);border-radius:4px;overflow:hidden}
+.trace-wrap{background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;overflow:hidden}
 svg#trace{display:block;width:100%;height:auto}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--ink-soft);margin:12px 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--ink-soft);margin:12px 0;font-family:var(--type)}
 .legend span{display:flex;align-items:center;gap:6px}
-.detail{background:var(--paper);padding:16px;border-left:3px solid var(--sea);margin-top:14px}
+.detail{background:var(--paper);padding:16px;border-left:4px solid var(--sea);margin-top:14px;transform:rotate(-.4deg)}
 .nm{font-family:var(--serif);font-style:italic;font-size:1.1rem;margin:0 0 4px}
 .detail p{margin:4px 0}
 .empty{font-family:var(--serif);font-style:italic;color:var(--ink-soft);padding:40px 10px;text-align:center}
 
 /* Log */
-.drift{border-top:1px solid var(--fog-deep);padding:16px 0}
-.drift h3{margin:0 0 6px;font-size:1rem;font-weight:600}
-.meta{font-size:.85rem;color:var(--ink-soft);margin:0 0 10px}
+.drift{border-top:2px dotted var(--quiet);padding:16px 0}
+.drift h3{margin:0 0 6px;font-size:1rem;font-family:var(--block);font-weight:400}
+.meta{font-size:.85rem;color:var(--ink-soft);margin:0 0 10px;font-family:var(--type)}
 .mk{display:flex;gap:10px;padding:8px 0}
 .mk .sw{margin-top:8px}
 .mk > div{min-width:0}
 .mk p{margin:0}
 .mk small{color:var(--ink-soft)}
 .mk-actions{display:flex;gap:16px;margin-top:2px}
-.linkbtn{background:none;border:0;padding:6px 0;color:var(--sea);font-weight:600;cursor:pointer;font-size:.9rem}
+.linkbtn{background:none;border:0;padding:6px 0;color:var(--sea);font-weight:600;cursor:pointer;font-size:.9rem;text-decoration:underline;text-decoration-style:wavy;text-underline-offset:4px;text-decoration-thickness:1px}
 .linkbtn.quiet{color:var(--ink-soft)}
-.editor{background:var(--paper);padding:14px;border-radius:8px;margin:10px 0}
-.elabel{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
+.editor{background:var(--paper);padding:14px;border:2px dotted var(--quiet);margin:10px 0}
+.elabel{display:block;font-family:var(--type);font-size:.9rem;margin:12px 0 6px}
 .editor > .elabel:first-child{margin-top:0}
-.editor input,.editor textarea{margin-top:6px;font-weight:400;background:var(--fog)}
+.editor input,.editor textarea{margin-top:6px;font-weight:400;font-family:var(--serif);background:var(--fog)}
 .editor .chip,.editor .scale button{background:var(--fog)}
-.editor .scale button[aria-pressed="true"]{background:var(--ink)}
-.confirm{background:var(--paper);border-left:3px solid var(--erased);padding:12px 14px;margin:8px 0;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.editor .chip[aria-pressed="true"]{background:var(--ink)}
+.editor .scale button[aria-pressed="true"]{background:var(--lamp)}
+.confirm{background:var(--paper);border-left:4px solid var(--erased);padding:12px 14px;margin:8px 0;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .confirm p{margin:0;flex:1 1 180px}
 
 #importText{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;line-height:1.4;min-height:120px}
 #importFile{font-size:.9rem;max-width:100%}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--fog);border-top:1px solid var(--fog-deep);
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:2.5px solid var(--ink);
   padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
-nav.tabs .in{display:flex;max-width:560px;width:100%;gap:4px}
-nav.tabs button{flex:1;background:none;border:0;padding:10px 0;cursor:pointer;color:var(--ink-soft);font-weight:500;border-radius:8px}
-nav.tabs button[aria-selected="true"]{color:var(--ink);background:var(--paper)}
+nav.tabs .in{display:flex;max-width:560px;width:100%;gap:6px}
+nav.tabs button{flex:1;background:none;border:0;padding:9px 0;cursor:pointer;color:var(--ink-soft);font-family:var(--type);font-size:.95rem}
+nav.tabs button[aria-selected="true"]{color:var(--paper);background:var(--ink);transform:rotate(-1.5deg)}
+nav.tabs button:nth-child(even)[aria-selected="true"]{transform:rotate(1.5deg);background:var(--lamp);color:var(--ink)}
 </style>
 
 </head>
 <body>
 <main>
   <header class="top">
-    <h1>Drift</h1>
+    <h1 aria-label="Drift"><span class="rn" aria-hidden="true">D</span><span class="rn" aria-hidden="true">r</span><span class="rn" aria-hidden="true">i</span><span class="rn" aria-hidden="true">f</span><span class="rn" aria-hidden="true">t</span></h1>
     <div class="status" aria-live="polite"><span class="dot" id="dot"></span><span id="statusText">Not drifting</span></div>
   </header>
 
@@ -137,15 +174,24 @@ nav.tabs button[aria-selected="true"]{color:var(--ink);background:var(--paper)}
       <button type="button" data-suit="Belong" aria-pressed="false">Belong</button>
       <button type="button" data-suit="Threshold" aria-pressed="false">Threshold</button>
     </div>
-    <div class="card" id="card">
-      <p class="suit" id="cardSuit">Draw a card to begin</p>
-      <p class="prompt" id="cardText">Leave the efficient route. Let the city decide the next turn.</p>
+    <div class="scene" id="scene" data-board="legs">
+      <img class="road" id="road" src="img/road-long.webp" alt="">
+      <div class="board" id="card" data-kind="legs">
+        <img id="boardImg" src="img/sign-legs.webp" alt="">
+        <span class="tape" aria-hidden="true"></span>
+        <div class="panel" id="panel" aria-live="polite">
+          <p class="ghost" id="ghost" aria-hidden="true"></p>
+          <p class="suit" id="cardSuit">draw a card to begin</p>
+          <p class="prompt" id="cardText">Leave the efficient route. Let your nose decide the next turn.</p>
+        </div>
+      </div>
+      <span class="sticker" aria-hidden="true"></span>
     </div>
     <div class="row">
       <button type="button" class="btn solid" id="drawBtn">Draw a prompt</button>
       <button type="button" class="btn lamp" id="driftBtn">Start drift</button>
     </div>
-    <p class="hint">Your drifts stay on this device. Nothing is uploaded. When you start a drift, your phone will ask to share your location. If you say no, the trace uses a simulated walk instead.</p>
+    <p class="hint">Walk, roll, ride, drive, sail, or sit still at a window. Your drifts stay on this device; nothing is uploaded. When you start a drift, your device asks to share your location. Say no and the trace invents a wander instead. If you're driving, draw the prompt before you set off, or hand it to a passenger.</p>
   </section>
 
   <section class="view" id="v-mark" aria-label="Mark this place" hidden>
@@ -178,7 +224,7 @@ nav.tabs button[aria-selected="true"]{color:var(--ink);background:var(--paper)}
   <section class="view" id="v-trace" aria-label="Trace" hidden>
     <h2>Your trace</h2>
     <div class="trace-wrap"><svg id="trace" viewBox="0 0 400 400" role="img" aria-label="Path of your drift with marked places"></svg></div>
-    <p class="empty" id="traceEmpty" hidden>Start a drift and your path will surface here, like a street emerging from fog.</p>
+    <p class="empty" id="traceEmpty" hidden>Start a drift and your path will surface here, like a road rising out of blank paper.</p>
     <div class="legend" id="legend"></div>
     <div class="detail" id="detail" aria-live="polite" hidden></div>
   </section>
@@ -219,23 +265,32 @@ nav.tabs button[aria-selected="true"]{color:var(--ink);background:var(--paper)}
 <script>
 (function(){
 const DECK = [
-  ["Orient","Walk toward the brightest thing you can see. Stop when it's no longer the brightest."],
-  ["Orient","Take every second left until you reach water or a dead end."],
+  ["Orient","Let your nose decide the next turn. Follow a smell until it fades."],
+  ["Orient","Go toward the brightest thing you can see. Stop when it isn't the brightest anymore."],
+  ["Orient","Take every second left until something stops you."],
   ["Orient","Follow one sound for as long as you can hear it."],
-  ["Orient","Walk the seam where two surfaces meet: sand and sidewalk, lawn and concrete."],
+  ["Orient","Travel the seam where two surfaces meet: water and land, field and road, shadow and sun."],
   ["Orient","Go where the wind is coming from."],
-  ["Détourne","Find a sign. Rename this place using only words from it."],
+  ["Orient","On a bus, train, or ferry: get off one stop early, or one stop late."],
+  ["Orient","Driving or cycling: at the next fork, take the smaller road."],
+  ["Orient","Choose your direction by where the birds are going."],
+  ["Détourne","Find a sign with nothing left on it. Decide what it should say."],
   ["Détourne","Pick a doorway that isn't meant for you. Describe who it's for."],
   ["Détourne","Find a place built for waiting. Use it for something else for one minute."],
-  ["Détourne","Read the street like a sentence. What is it saying about the people who live here?"],
+  ["Détourne","Read the road like a sentence. What is it saying, and to whom?"],
+  ["Détourne","Treat the window you're looking through as a screen. Give what's playing a title."],
+  ["Détourne","Collect three words you pass on the way. Make them the name of where you are."],
   ["Belong","Stand somewhere you know you're allowed. Then somewhere you're not sure. Note what changed in you."],
-  ["Belong","Look for traces of who was here before the current owners."],
+  ["Belong","Look for traces of whoever was here before."],
   ["Belong","Find a place someone could rest. Would they be moved along?"],
-  ["Belong","Count the cameras on this block. Now count the benches."],
-  ["Threshold","Find a threshold: a gate, a curb, a fog line. Stand on it and describe each side."],
+  ["Belong","Count the cameras where you are. Now count the places to sit."],
+  ["Belong","Notice who else is traveling the way you are. Who isn't?"],
+  ["Threshold","Find a threshold: a gate, a curb, a shoreline, a border. Stand on it and describe each side."],
   ["Threshold","Look for something unfinished. Imagine three futures for it."],
-  ["Threshold","Walk until the air changes. Mark exactly where it happened."],
-  ["Threshold","Find a place that belongs to no one right now. Stay until someone claims it."]
+  ["Threshold","Keep going until the air changes. Mark exactly where it happened."],
+  ["Threshold","Find a place that belongs to no one right now. Stay until someone claims it."],
+  ["Threshold","Stop at the next in-between place: a platform, a rest stop, a landing. Stay ten breaths longer than you need."],
+  ["Threshold","Stay still. Let the place move instead."]
 ];
 const FEELS = [
   {k:"welcomed",label:"Welcomed",c:"--sea"},
@@ -243,7 +298,10 @@ const FEELS = [
   {k:"unnoticed",label:"Unnoticed",c:"--quiet"},
   {k:"pushed",label:"Pushed out",c:"--erased"}
 ];
-const FOGS = ["Clear","Wisps","Blanket","Drizzle"];
+const FOGS = ["Clear","Hazy","Heavy","Wet","Windy"];
+const OLD_FOGS = ["Wisps","Blanket","Drizzle"];
+const ROADS = ["road-long","road-wind","road-rise","road-curve"];
+const BOARDS = ["legs","pole"];
 const KEY = "drift.v1";
 
 let state = load();
@@ -275,6 +333,7 @@ function show(v){
   document.querySelectorAll("section.view").forEach(s=>{ s.hidden = s.id!=="v-"+v; });
   if(v==="trace") renderTrace();
   if(v==="log") renderLog();
+  if(v==="drift") requestAnimationFrame(fitPanel);
   if(v==="mark") $("#markHint").textContent = cur() ? "This mark will pin to your current spot on the drift." : "No drift running. The mark saves to your log without a position.";
   window.scrollTo(0,0);
 }
@@ -287,12 +346,52 @@ document.querySelectorAll(".suits button").forEach(b=>b.addEventListener("click"
 $("#drawBtn").addEventListener("click", ()=>{
   const pool = DECK.filter(d=>(suit==="all"||d[0]===suit) && d!==lastPrompt);
   const p = pool[Math.floor(Math.random()*pool.length)];
+  const prev = lastPrompt ? lastPrompt[1] : $("#cardText").textContent;
   lastPrompt = p;
+  recollage();
+  $("#ghost").textContent = prev;
   $("#cardSuit").innerHTML = "<b>"+esc(p[0])+"</b>";
   $("#cardText").textContent = p[1];
-  const c=$("#card"); c.classList.remove("flip"); void c.offsetWidth; c.classList.add("flip");
+  fitPanel();
+  const c=$("#card"); c.classList.remove("paste"); void c.offsetWidth; c.classList.add("paste");
   const d = cur(); if(d){ d.prompts.push({t:Date.now(), suit:p[0], text:p[1]}); save(); }
 });
+
+/* Collage: every draw re-pastes the scene */
+let roadNow = "road-long", boardNow = "legs";
+const rnd = (a,b) => a + Math.random()*(b-a);
+const pickOther = (list, cur) => { const o = list.filter(x=>x!==cur); return o[Math.floor(Math.random()*o.length)]; };
+function recollage(){
+  const scene=$("#scene"), board=$("#card"), road=$("#road");
+  boardNow = Math.random()<.6 ? pickOther(BOARDS, boardNow) : boardNow;
+  scene.dataset.board = boardNow; board.dataset.kind = boardNow;
+  $("#boardImg").src = "img/sign-"+boardNow+".webp";
+  board.style.setProperty("--br", rnd(-3,3).toFixed(2)+"deg");
+  board.style.setProperty("--by", rnd(0,4).toFixed(1)+"%");
+  const tape=board.querySelector(".tape");
+  const left = Math.random()<.5;
+  tape.style.setProperty("--tx", left ? rnd(-2,8).toFixed(1)+"%" : rnd(72,82).toFixed(1)+"%");
+  tape.style.setProperty("--ty", boardNow==="pole" ? rnd(17,21).toFixed(1)+"%" : rnd(1,5).toFixed(1)+"%");
+  tape.style.setProperty("--tr", (left ? rnd(-28,-10) : rnd(10,28)).toFixed(1)+"deg");
+  const st=scene.querySelector(".sticker");
+  st.style.setProperty("--sx", rnd(2,30).toFixed(1)+"%"); st.style.setProperty("--sy", rnd(48,80).toFixed(1)+"%");
+  roadNow = pickOther(ROADS, roadNow);
+  road.classList.add("out");
+  setTimeout(()=>{ road.src = "img/"+roadNow+".webp";
+    road.style.setProperty("--rr", rnd(-4,4).toFixed(1)+"deg"); road.style.setProperty("--rx", rnd(-6,6).toFixed(1)+"%");
+    road.classList.remove("out"); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 350);
+}
+function fitPanel(){
+  const panel=$("#panel"), t=$("#cardText"), g=$("#ghost");
+  const w=panel.clientWidth; if(!w) return;
+  let size = Math.min(30, w/9);
+  t.style.fontSize = size+"px";
+  while(size>10 && (t.offsetHeight + $("#cardSuit").offsetHeight + 4) > panel.clientHeight){ size-=0.5; t.style.fontSize=size+"px"; }
+  g.style.fontSize = (size*0.9)+"px";
+}
+$("#boardImg").addEventListener("load", fitPanel);
+window.addEventListener("resize", fitPanel);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitPanel);
 
 /* Drift */
 $("#driftBtn").addEventListener("click", ()=> cur() ? stopDrift() : startDrift());
@@ -522,7 +621,7 @@ function cleanDrift(d){
   const marks=Array.isArray(d.marks)?d.marks.filter(m=>m&&typeof m==="object").map(m=>({
     t:num(m.t)?m.t:d.start, feel:FEELS.some(f=>f.k===m.feel)?m.feel:null,
     liminal:num(m.liminal)&&m.liminal>=1&&m.liminal<=5?Math.round(m.liminal):null,
-    fog:FOGS.includes(m.fog)?m.fog:null, name:typeof m.name==="string"?m.name.slice(0,80):"",
+    fog:(FOGS.includes(m.fog)||OLD_FOGS.includes(m.fog))?m.fog:null, name:typeof m.name==="string"?m.name.slice(0,80):"",
     note:typeof m.note==="string"?m.note:"", pos:Array.isArray(m.pos)&&num(m.pos[0])&&num(m.pos[1])?[m.pos[0],m.pos[1]]:null,
     prompt:typeof m.prompt==="string"?m.prompt:null, edited:num(m.edited)?m.edited:undefined, added:m.added===true||undefined})):[];
   const prompts=Array.isArray(d.prompts)?d.prompts.filter(x=>x&&typeof x.text==="string").map(x=>({t:num(x.t)?x.t:d.start,suit:String(x.suit||""),text:x.text})):[];
