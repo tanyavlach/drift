@@ -156,6 +156,13 @@ nav.tabs .in{display:flex;max-width:560px;width:100%;gap:6px}
 nav.tabs button{flex:1;background:none;border:0;padding:9px 0;cursor:pointer;color:var(--ink-soft);font-family:var(--type);font-size:.95rem}
 nav.tabs button[aria-selected="true"]{color:var(--paper);background:var(--ink);transform:rotate(-1.5deg)}
 nav.tabs button:nth-child(even)[aria-selected="true"]{transform:rotate(1.5deg);background:var(--lamp);color:var(--ink)}
+.about{background:var(--paper);padding:20px 20px 8px;border:2.5px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--lamp);transform:rotate(-.5deg)}
+.about p{margin:0 0 14px;font-family:var(--serif);line-height:1.6}
+.about .lede{font-family:var(--type);color:var(--lamp);font-size:1.05rem;line-height:1.4}
+.about .byline{font-family:"Cabin",var(--sans);font-style:italic;color:var(--ink-soft);border-top:2px dotted var(--quiet);padding-top:12px}
+.about a,.colophon a{color:var(--ink);text-decoration-color:var(--lamp);text-decoration-thickness:2px;text-underline-offset:3px}
+.colophon{margin:34px 0 0;font-family:var(--type);font-size:.78rem;color:var(--ink-soft);text-align:center}
+nav.tabs button{font-size:.88rem}
 </style>
 
 </head>
@@ -250,6 +257,19 @@ nav.tabs button:nth-child(even)[aria-selected="true"]{transform:rotate(1.5deg);b
       <p class="hint">Drifts you already have are skipped, so importing the same log twice won't duplicate anything.</p>
     </div>
   </section>
+
+  <section class="view" id="v-about" aria-label="About" hidden>
+    <h2>About Drift</h2>
+    <div class="about">
+      <p class="lede">A deck of prompts for getting a little lost on purpose.</p>
+      <p>Drift borrows from the Situationists' <i>dérive</i>: leaving the efficient route and letting a place pull you somewhere else. Draw a card, follow it on foot, on wheels, by bus, by boat, or from a window seat, and mark how each place holds you. Are you welcomed, watched, unnoticed, pushed out? The trace that comes back is a map of feeling, not of streets.</p>
+      <p>It works anywhere. There are no routes to follow and no names on the signs. Let your nose decide the next turn.</p>
+      <p>Your drifts live only on your device. Nothing is collected, tracked, or uploaded.</p>
+      <p class="byline">Made by <a href="https://tanyavlach.com">Tanya Vlach</a>, transdisciplinary artist and immersive storyteller, as part of her evolving work(shops).</p>
+    </div>
+  </section>
+
+  <footer class="colophon">© 2026 Tanya Vlach. All rights reserved. · <a href="https://tanyavlach.com">tanyavlach.com</a></footer>
 </main>
 
 <nav class="tabs" role="tablist" aria-label="Sections">
@@ -258,6 +278,7 @@ nav.tabs button:nth-child(even)[aria-selected="true"]{transform:rotate(1.5deg);b
     <button type="button" role="tab" data-view="mark" aria-selected="false">Mark</button>
     <button type="button" role="tab" data-view="trace" aria-selected="false">Trace</button>
     <button type="button" role="tab" data-view="log" aria-selected="false">Log</button>
+    <button type="button" role="tab" data-view="about" aria-selected="false">About</button>
   </div>
 </nav>
 <div class="toast" id="toast" role="status"></div>
